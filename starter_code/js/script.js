@@ -30,8 +30,13 @@ SC.initialize({
 // $(document).ready() runs once the page DOM is ready for JavaScript
 // to execute. A page can't be manipulated safely until the document is ready.
 //
-$(document).ready(function () {
-  // Add click handlers to 'go' and 'random' buttons here.
+
+$(document).ready(function() {
+  $("#go").click(goClicked);
+  $("#random").click(randomClicked);
+  //playOneTrack()
+
+  //Add click handlers to 'go' and 'random' buttons here.
 });
 
 
@@ -45,7 +50,11 @@ $(document).ready(function () {
 //
 // Play a track using the Souncdloud Javascript SDK
 //
-function playOneTrack () {
+function playOneTrack() {
+  SC.stream('/tracks/293').then(function(player) {
+    player.play();
+    
+  });
   // TODO: fill this out
 }
 
@@ -66,7 +75,12 @@ var currentSong;
 // 2. Search Souncloud for a song for the mood
 // 3. Update jumbotron #moodstatus to dipsplay the mood
 //
-function goClicked () {
+function goClicked() {
+  var mood = $("#mood").val();
+  searchTracks(mood);
+  updateJumboTronColor(mood);
+
+
   // TODO: fill this out
 }
 
@@ -80,8 +94,13 @@ function goClicked () {
 //
 // * **mood**, the user's mood.
 //
-function searchTracks (mood) {
+function searchTracks(mood) {
   // TODO: fill this out
+  SC.get('/tracks', {
+    tags: mood
+  }).then(function(tracks) {
+    playTrack(tracks[0].id,tracks[0].title, tracks);
+  });
 }
 
 //
@@ -94,9 +113,12 @@ function searchTracks (mood) {
 //
 // * **trackid**, the ID of the track to play.
 //
-function playTrack (trackid) {
-  // TODO: fill this out
-}
+function playTrack(trackid, title, tracks){
+  SC.stream(/tracks/ + trackid ).then(function(player) {
+    player.play();
+    updateJumboTron(title, tracks);
+  }); // TODO: fill this out
+};
 
 //
 // # Update Jumbotron
@@ -106,10 +128,41 @@ function playTrack (trackid) {
 //
 // * **mood**, the user's mood
 //
-function updateJumboTron (mood) {
-  $('#moodstatus').text('It sounds like you are in a ' + mood +  ' mood!!');
+function updateJumboTron(title, tracks) {
+  $('#moodstatus').text('You are listening to: ' + title );
+  var songArt = $("<img src=\"" + tracks[0].artwork_url +"\"/>");
+  console.log(tracks);
+  $(".jumbotron").append(songArt);
 }
-
+function updateJumboTronColor(mood) {
+  if(mood == "happy" ){
+   $(".jumbotron").css("background-color", "yellow");
+  }
+   if(mood == "sad" ){
+   $(".jumbotron").css("background-color", "blue");
+  }
+   if(mood == "angry" ){
+   $(".jumbotron").css("background-color", "red");
+  }
+   if(mood == "bored" ){
+   $(".jumbotron").css("background-color", "brown");
+  }
+   if(mood == "enlighted" ){
+   $(".jumbotron").css("background-color", "white");
+  }
+   if(mood == "excited" ){
+   $(".jumbotron").css("background-color", "orange");
+  }
+   if(mood == "scared" ){
+   $(".jumbotron").css("background-color", "black");
+  }
+   if(mood == "tired" ){
+   $(".jumbotron").css("background-color", "gray");
+  }
+   if(mood == "sick" ){
+   $(".jumbotron").css("background-color", "green");
+  }
+}
 
 // =======================
 //
@@ -118,15 +171,18 @@ function updateJumboTron (mood) {
 // =======================
 
 // List of moods
-var moodList = [];
+var moodList = ["sad", "happy", "angry", "depressed", "excited", "suprised", "scared", "tired", "bored", "enlighted"];
 
 //
 // # 'Random' button click handler
 //
 // Pick a mood at random from moodList and find a track for that mood.
 //
-function randomClicked () {
+function randomClicked() {
   // TODO: fill this out
+  var mooodie = randomMood();
+  searchTracks(mooodie);
+  updateJumboTronColor(mooodie);
 }
 
 //
@@ -134,8 +190,10 @@ function randomClicked () {
 //
 // Returns a random mood from moodList.
 //
-function randomMood () {
+function randomMood() {
   // TODO: fill this out
+  var pickeMood = moodList[Math.floor((Math.random()* 10)+ 1)] ;
+  return pickeMood;
 }
 
 
@@ -162,8 +220,10 @@ function randomMood () {
 //
 // * **color**, the color to change to
 //
-function changeColor (color) {
+function changeColor(color) {
+ 
   // TODO: fill this out
+  
 }
 
 //
@@ -177,7 +237,7 @@ function changeColor (color) {
 //
 // * returns a color's hex code
 //
-function getColor (mood) {
+function getColor(mood) {
   // TODO: fill this out
 }
 
